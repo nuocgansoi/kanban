@@ -6,13 +6,13 @@ Redmine::Plugin.register :kanban do
   url 'https://twitter.com/happy_se_life'
   author_url 'mailto:kohei_nom@yahoo.co.jp'
   
-  #アプリケーションメニューに「かんばん」を表示
-  menu :application_menu, :kanban, { :controller => 'kanban', :action => 'index' }, :caption => 'かんばん', :if => Proc.new { User.current.logged? }
+  #Hiển thị "Kanban" trong menu ứng dụng
+  menu :application_menu, :kanban, { :controller => 'kanban', :action => 'index' }, :caption => 'Kanban', :if => Proc.new { User.current.logged? }
   
-  #プロジェクトメニューに「かんばん」を表示
-  menu :project_menu, :kanban, { :controller => 'kanban', :action => 'index' }, :caption => 'かんばん', :param => :project_id
+  #Hiển thị "Kanban" trong menu dự án
+  menu :project_menu, :kanban, { :controller => 'kanban', :action => 'index' }, :caption => 'Kanban', :param => :project_id
   
-  # プロジェクトごとの権限を追加
+  # Thêm quyền cho từng dự án
   project_module :kanban do
     permission :kanban, {:kanban => [:index]}
  end
