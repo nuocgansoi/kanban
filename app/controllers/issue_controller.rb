@@ -4,53 +4,53 @@ class IssueController < ApplicationController
   end
 
   #
-  # ステータスを変更する
+  # Thay đổi trạng thái
   #
   def update_status
-    # POST値を取得
+    # POST Nhận giá trị
     card_id = params[:card_id]
     field_id = params[:field_id]
     comment = params[:comment]
     
-    # チケットIDを取得
+    # Nhận ID thẻ
     issue_array = card_id.split("-")
     issue_id = issue_array[1].to_i
 
-    # ステータスIDを取得
+    # Nhận ID trạng thái
     field_array = field_id.split("-")
     status_id = field_array[1].to_i
     
-    # ユーザIDを取得
+    # Nhận ID người dùng
     if field_array.length == 3 then 
       user_id = field_array[2].to_i
     else
       user_id = nil
     end
 
-    # チケット取得
+    # Nhận thẻ
     issue = Issue.find(issue_id)
 
-    # 変更可能なステータス
+    # Trạng thái thay đổi
     allowd_statuses = issue.new_statuses_allowed_to
     allowd_statuses_array = []
     allowd_statuses.each {|status|
       allowd_statuses_array << status.id
     }
 
-    # 返却値
+    # Giá trị trả về
     result_hash = {}
 
-    # ステータス変更
+    # Thay đổi trạng thái
     if allowd_statuses_array.include?(status_id) == true then
       if (issue.status_id != status_id) || (issue.assigned_to_id != user_id) then
-        # ステータス変更を保存
+        # Lưu thay đổi trạng thái
         old_status_id = issue.status_id
         old_done_ratio = issue.done_ratio
         old_assigned_to_id = issue.assigned_to_id
         issue.status_id = status_id
         issue.assigned_to_id = user_id
         issue.save!
-        # ノートを追加する
+        # Thêm ghi chú
         note = Journal.new(:journalized => issue, :notes => comment, user: User.current)
         note.details << JournalDetail.new(:property => 'attr', :prop_key => 'status_id', :old_value => old_status_id,:value => status_id)
         note.details << JournalDetail.new(:property => 'attr', :prop_key => 'done_ratio', :old_value => old_done_ratio,:value => issue.done_ratio)
