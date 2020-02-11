@@ -1,4 +1,8 @@
 <!-- Javascript -->
+<script>
+  var label_recent_history_is_here = "<%= I18n.t(:kanban_label_recent_history_is_here) %>";
+  var label_add_notes = "<%= I18n.t(:kanban_label_add_notes) %>";
+</script>
 <script src="/javascripts/context_menu.js"></script>
 <%= javascript_include_tag "kanban", :plugin => "kanban" %>
 <!-- CSS -->
@@ -37,7 +41,7 @@
         </td>
       </tr>
       <tr>
-        <td style="width: 100px">  
+        <td style="width: 100px">
           <label>Ngày kết thúc</label>
         </td>
         <td>
@@ -91,7 +95,7 @@
         </td>
       </tr>
       <tr>
-        <td style="width: 100px">  
+        <td style="width: 100px">
           <label>WIP Hạn chế</label>
         </td>
         <td>
@@ -172,7 +176,7 @@
                 <% end %>
               <% end %>
               <% @issues_hash[status_id].each {|issue| %>
-                <% if uid == issue.assigned_to_id %>  
+                <% if uid == issue.assigned_to_id %>
                   <!-- 1枚のカード -->
                   <div id="issue-<%= issue.id %>" class="hascontextmenu created-by-me context-menu-selection
                     <!-- カード色 -->
@@ -197,7 +201,7 @@
 <!-- 各ユーザーのhidden値 -->
 <% @user_id_array.each {|uid| %>
   <% if uid != nil then %>
-    <!-- WIP値 --> 
+    <!-- WIP値 -->
     <p id="wip-<%= uid %>" style="display: none;"><%= @wip_hash[uid] %></p>
     <!-- ユーザ名 -->
     <p id="user_name_user_id-<%= uid %>" style="display: none;"><%= @all_users.find(uid).firstname %></p>

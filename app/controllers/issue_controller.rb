@@ -4,53 +4,53 @@ class IssueController < ApplicationController
   end
 
   #
-  # Thay đổi trạng thái
+  # Change ticket status and assignee
   #
   def update_status
-    # POST Nhận giá trị
+    # Get POST value
     card_id = params[:card_id]
     field_id = params[:field_id]
     comment = params[:comment]
-    
-    # Nhận ID thẻ
+
+    # Target issue ID
     issue_array = card_id.split("-")
     issue_id = issue_array[1].to_i
 
-    # Nhận ID trạng thái
+    # Status ID to change status
     field_array = field_id.split("-")
     status_id = field_array[1].to_i
-    
-    # Nhận ID người dùng
-    if field_array.length == 3 then 
+
+    # User ID to change assignee
+    if field_array.length == 3 then
       user_id = field_array[2].to_i
     else
       user_id = nil
     end
 
-    # Nhận thẻ
+    # Target Issue
     issue = Issue.find(issue_id)
 
-    # Trạng thái thay đổi
+    # Status IDs allowed to change
     allowd_statuses = issue.new_statuses_allowed_to
     allowd_statuses_array = []
     allowd_statuses.each {|status|
       allowd_statuses_array << status.id
     }
 
-    # Giá trị trả về
+    # Declaring variable to return
     result_hash = {}
 
-    # Thay đổi trạng thái
+    # Change status and assignee
     if allowd_statuses_array.include?(status_id) == true then
       if (issue.status_id != status_id) || (issue.assigned_to_id != user_id) then
-        # Lưu thay đổi trạng thái
+        # Update issue
         old_status_id = issue.status_id
         old_done_ratio = issue.done_ratio
         old_assigned_to_id = issue.assigned_to_id
         issue.status_id = status_id
         issue.assigned_to_id = user_id
         issue.save!
-        # Thêm ghi chú
+        # Create and Add a journal
         note = Journal.new(:journalized => issue, :notes => comment, user: User.current)
         note.details << JournalDetail.new(:property => 'attr', :prop_key => 'status_id', :old_value => old_status_id,:value => status_id)
         note.details << JournalDetail.new(:property => 'attr', :prop_key => 'done_ratio', :old_value => old_done_ratio,:value => issue.done_ratio)
