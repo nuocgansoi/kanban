@@ -32,4 +32,9 @@ class Constants < ActiveRecord::Base
 
   # Max length of note on sidebar (bytes)
   MAX_NOTES_BYTESIZE = 350
+
+  # Enable display user's avator at user lane
+  # 0: None
+  # 1: Display avator
+  DISPLAY_USER_AVATOR = 1
 end

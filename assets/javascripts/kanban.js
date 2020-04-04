@@ -96,7 +96,7 @@ $(function() {
 function saveTicket(card_id, from_field_id, to_field_id, comment) {
     // AJAX
     $.ajax({
-        url:'/update_status',
+        url:'./update_status',
         type:'POST',
         data:{
             'card_id'  :card_id,
@@ -183,6 +183,7 @@ function saveTicket(card_id, from_field_id, to_field_id, comment) {
             }
         }
         if (data.result == "NG") {
+            alert("Operation not permitted")
             // Reload page
             $('#form1').submit();
         }
@@ -201,7 +202,7 @@ function saveTicket(card_id, from_field_id, to_field_id, comment) {
 function getJournal(card_id) {
     // AJAX
     $.ajax({
-        url:'/get_journal',
+        url:'./get_journal',
         type:'POST',
         data:{
             'card_id' :card_id ,
@@ -235,7 +236,7 @@ function putJournal(card_id) {
     var note = $('#comment_area').val();
     // AJAX
     $.ajax({
-        url:'/put_journal',
+        url:'./put_journal',
         type:'POST',
         data:{
             'card_id' :card_id ,

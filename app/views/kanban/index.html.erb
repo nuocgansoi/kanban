@@ -3,21 +3,21 @@
   var label_recent_history_is_here = "<%= I18n.t(:kanban_label_recent_history_is_here) %>";
   var label_add_notes = "<%= I18n.t(:kanban_label_add_notes) %>";
 </script>
-<script src="/javascripts/context_menu.js"></script>
+<script src="./javascripts/context_menu.js"></script>
 <%= javascript_include_tag "kanban", :plugin => "kanban" %>
 <!-- CSS -->
-<link rel="stylesheet" media="screen" href="/stylesheets/context_menu.css">
+<link rel="stylesheet" media="screen" href="./stylesheets/context_menu.css">
 <%= stylesheet_link_tag 'kanban', :plugin => 'kanban' %>
 <div class="contextual">
   <% if @project_id.blank? != true then %>
-    <a class="icon icon-add new-issue" href="/projects/<%= @project_id %>/issues/new">Thẻ mới</a>
+    <a class="icon icon-add new-issue" href="./projects/<%= @project_id %>/issues/new">Thẻ mới</a>
   <% else %>
-    <a class="icon icon-add new-issue" href="/issues/new">Thẻ mới</a>
+    <a class="icon icon-add new-issue" href="./issues/new">Thẻ mới</a>
   <% end %>
 </div>
 <!-- タイトル -->
-<h2><%= avatar(@user, :size => "24") %><%= @user.firstname %> Kanban</h2>
-<!-- フォーム -->
+<h2><% if Constants::DISPLAY_USER_AVATOR == 1 then %><%= avatar(@user, :size => "24") %><% end %><%= @user.firstname %> Kanban</h2>
+<!-- Form for filters -->
 <form id="form1" action="" method="GET">
 <!-- 開閉パーツ -->
 <fieldset id="upper_filters" class="collapsible collapsed">
@@ -135,13 +135,13 @@
 <p class="buttons">
   <a href="#" onclick="$('#form1').submit(); return false;" class="icon icon-checked">Áp dụng</a>
   <% if @project_id.blank? == true then %>
-    <a class="icon icon-reload" href="/kanban?clear=1">Xóa</a>
+    <a class="icon icon-reload" href="./kanban?clear=1">Xóa</a>
   <% else %>
-    <a class="icon icon-reload" href="/kanban?clear=1&project_id=<%= @project_id %>">Xóa</a>
+    <a class="icon icon-reload" href="./kanban?clear=1&project_id=<%= @project_id %>">Xóa</a>
   <% end %>
 </p>
 <!-- フォーム -->
-<form data-cm-url="/issues/context_menu" action="/issues" accept-charset="UTF-10" method="post">
+<form data-cm-url="./issues/context_menu" action="./issues" accept-charset="UTF-10" method="post">
 <div>
   <!-- テーブル -->
   <table class="list issues odd-even" style="table-layout: fixed;">
@@ -161,7 +161,16 @@
         <tr class="group">
           <td>
             <% if uid != nil then %>
-              <p><%= @all_users.find(uid).firstname %><p>
+              <% if @group_id_array.include?(uid) then %>
+                <!-- When group -->
+                <img src="./images/group.png">
+                <p style="writing-mode: vertical-rl;"><%= @all_names_hash[uid] %></p>
+              <% else %>
+                <!-- When user -->
+                <p style="writing-mode: vertical-rl;"><% if Constants::DISPLAY_USER_AVATOR == 1 then %><%= avatar(@all_users.find(uid), :size => "16") %>&nbsp;<% end %><%= @all_names_hash[uid] %></p>
+              <% end %>
+            <% else %>
+              <p style="writing-mode: vertical-rl;">Not Assigned</p>
             <% end %>
           </td>
           <!-- Field列 -->
@@ -182,7 +191,7 @@
                     <!-- カード色 -->
                     <% if issue.priority_id >= 3 then %> my-issue-card-high-priority <% elsif issue.priority_id == 2 %> my-issue-card <% else %> my-issue-card-low-priority <% end %>">
                     <div style="float: right; font-size: smaller"><%= issue.project.name %></div><p><input type="checkbox" name="ids[]" value="<%= issue.id %>"> <%= issue.tracker.name %> #<%= issue.id %></p>
-                    <p><a href="../issues/<%= issue.id %>"><%= issue.subject %></a></p>
+                    <p><a href="./issues/<%= issue.id %>"><%= issue.subject %></a></p>
                     <hr>
                     <!-- 24時間以内に更新 -->
                     <% diff = (Time.now - issue.updated_on) / 3600 / 24 %>
@@ -203,8 +212,8 @@
   <% if uid != nil then %>
     <!-- WIP値 -->
     <p id="wip-<%= uid %>" style="display: none;"><%= @wip_hash[uid] %></p>
-    <!-- ユーザ名 -->
-    <p id="user_name_user_id-<%= uid %>" style="display: none;"><%= @all_users.find(uid).firstname %></p>
+    <!-- User name on card -->
+    <p id="user_name_user_id-<%= uid %>" style="display: none;"><%= @all_names_hash[uid] %></p>
   <% end %>
 <% } %>
 <!-- WIP判定フィールド -->

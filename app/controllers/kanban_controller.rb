@@ -26,12 +26,47 @@ class KanbanController < ApplicationController
     # Get all user for user filetr <select>
     @all_users = User.where(type: "User").where(status: 1)
 
+    # Collect name for users
+    @all_names_hash = {}
+    @all_users.each {|user|
+      @all_names_hash[user.id] = user.name
+    }
+
     # Remove inactive users from array of target users
     @user_id_array.each {|id|
       if @all_users.ids.include?(id) == false then
         @user_id_array.delete(id)
       end
     }
+
+    # Add group ID to array of target users
+    @group_id_array = []
+    if Setting.issue_group_assignment? then
+      if @group_id != nil and @group_id.to_i != 0 then
+        @user_id_array << @group_id.to_i
+        @group_id_array << @group_id.to_i
+      else
+        @all_groups.each {|group|
+          if group.user_ids.include?(@user_id.to_i)
+            @user_id_array << group.id
+            @group_id_array << group.id
+          end
+        }
+      end
+    end
+
+    # Collect name for groups
+    @all_groups.each {|group|
+      @all_names_hash[group.id] = group.name
+    }
+
+    # Move current user to head
+    selected_user_index = @user_id_array.index(@user_id.to_i)
+    if @user_id_array.length > 1 && selected_user_index != nil then
+      swap_id = @user_id_array[0]
+      @user_id_array[selected_user_index] = swap_id
+      @user_id_array[0] = @user_id.to_i
+    end
 
     # Get all status orderby position
     @issue_statuses = IssueStatus.all.order("position ASC")
@@ -72,6 +107,10 @@ class KanbanController < ApplicationController
     else
       # When select one project
       unique_project_id_array << @project.id.to_i
+      subprojects = Project.where(parent_id: @project.id.to_i)
+      subprojects.each {|subproject|
+        unique_project_id_array << subproject.id.to_i
+      }
     end
 
     # To display no assignee issue
